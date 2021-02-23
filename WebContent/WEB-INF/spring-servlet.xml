@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+    	http://www.springframework.org/schema/beans/spring-beans.xsd
+    	http://www.springframework.org/schema/context
+    	http://www.springframework.org/schema/context/spring-context.xsd
+    	http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<context:component-scan
+		base-package="com.learning.spring" />
+		
+	<mvc:annotation-driven validator="myBeansValidator"/>
+	<mvc:default-servlet-handler />
+	
+	<bean id="myBeansValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/userdb" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+
+	<bean id="userdao" class="com.learning.spring.dao.UserDAOImplementation">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<bean id="categorydao" class="com.learning.spring.dao.CategoryDAOImplementation">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<bean id="transactiondao" class="com.learning.spring.dao.TransactionDAOImplementation">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<bean id="userService" class="com.learning.spring.services.UserServiceImplementation">
+		<property name="userDao" ref="userdao"></property>
+	</bean>
+	
+	<bean id="categoryService" class="com.learning.spring.services.CategoryServiceImplementation">
+		<property name="categoryDao" ref="categorydao"></property>
+	</bean>
+	
+	<bean id="transactionService" class="com.learning.spring.services.TransactionServiceImplementation">
+		<property name="transactiondao" ref="transactiondao"></property>
+	</bean>
+	
+	<bean id="user" class="com.learning.spring.models.User" />
+	
+	<bean id="userController" class="com.learning.spring.controllers.UserController">
+		<property name="user" ref="user"></property>
+		<property name="userService" ref="userService"></property>
+	</bean>
+	
+	<bean id="categoryController" class="com.learning.spring.controllers.CategoryController">
+		<property name="categoryService" ref="categoryService"></property>
+	</bean>
+	
+	<bean id="transactionController" class="com.learning.spring.controllers.TransactionController">
+		<property name="transactionService" ref="transactionService"></property>
+	</bean>
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+</beans>
+
+
+
+
